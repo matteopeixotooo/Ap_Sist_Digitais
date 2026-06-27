@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apresentação de Defesa: MIPS Monociclo Extendido</title>
+  <style>
+    :root {
+      --azulufrn: #003E7E;
+      --azul-escuro: #00254C;
+      --cinza-claro: #F8F9FA;
+      --cinza-escuro: #1A1A1A;
+      --texto-escuro: #2D3748;
+      --bgcode: #1E1E1E;
+      --keyword: #569CD6;
+      --comment: #6A9955;
+      --literal: #CE9178;
+      --sucesso: #28A745;
+      --alerta: #DC3545;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--cinza-escuro);
+      color: var(--texto-escuro);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .deck-container {
+      position: relative;
+      width: 96vw;
+      height: 88vh;
+      max-width: 1400px;
+      max-height: 800px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+      display: flex;
+      overflow: hidden;
+    }
+
+    .deck-container:fullscreen {
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      max-height: none;
+      border-radius: 0;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 40px 55px;
+      opacity: 0;
+      transform: scale(0.97);
+      transition: all 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      pointer-events: none;
+      background: white;
+    }
+
+    .slide.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+      position: relative;
+    }
+
+    .slide-header {
+      border-bottom: 4px solid var(--azulufrn);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .slide-header h2 {
+      color: var(--azulufrn);
+      font-size: 2.2rem;
+      font-weight: 800;
+    }
+
+    .slide-subheader {
+      font-size: 0.9rem;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: bold;
+    }
+
+    .slide-content {
+      flex: 1;
+      font-size: 1.25rem;
+      line-height: 1.5;
+      overflow: hidden;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      height: 100%;
+      align-items: stretch;
+    }
+
+    .card {
+      background: var(--cinza-claro);
+      border-top: 4px solid var(--azulufrn);
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      margin-bottom: 10px;
+    }
+
+    .card.success-card {
+      border-top-color: var(--sucesso);
+    }
+
+    .card.alert-card {
+      border-top-color: var(--alerta);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      color: var(--azul-escuro);
+      font-size: 1.35rem;
+      border-bottom: 1px solid #E2E8F0;
+      padding-bottom: 5px;
+    }
+
+    ul,
+    ol {
+      list-style-position: inside;
+      margin-left: 5px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: var(--azulufrn);
+    }
+
+    pre {
+      background: var(--bgcode);
+      color: #D4D4D4;
+      padding: 18px;
+      border-radius: 6px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      overflow: auto;
+      height: 100%;
+      border-left: 5px solid #007ACC;
+      white-space: pre;
+    }
+
+    .k {
+      color: var(--keyword);
+      font-weight: bold;
+    }
+
+    .c {
+      color: var(--comment);
+      font-style: italic;
+    }
+
+    .l {
+      color: var(--literal);
+    }
+
+    .slide-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.76rem;
+      margin-top: 5px;
+    }
+
+    .slide-table th,
+    .slide-table td {
+      padding: 5px 6px;
+      text-align: center;
+      border: 1px solid #CBD5E0;
+    }
+
+    .slide-table th {
+      background-color: var(--azulufrn);
+      color: white;
+      font-weight: bold;
+    }
+
+    .slide-table tr:nth-child(even) {
+      background-color: var(--cinza-claro);
+    }
+
+    /* CORREÇÃO DO CONTAINER DA WAVEFORM ULTRAWIDE 1895x606 */
+    .waveform-wide-box {
+      width: 100%;
+      margin-bottom: 20px;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+    }
+
+    .waveform-wide-box img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .controls {
+      position: absolute;
+      bottom: 20px;
+      right: 40px;
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .btn {
+      background: var(--azulufrn);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:hover {
+      background: var(--azul-escuro);
+    }
+
+    .btn:disabled {
+      background: #cbd5e0;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-fullscreen {
+      background: #4A5568;
+    }
+
+    .progress-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: #E2E8F0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--azulufrn);
+      transition: width 0.3s ease;
+    }
+
+    .footer-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 40px;
+      color: #A0AEC0;
+      font-size: 0.85rem;
+      z-index: 10;
+    }
+
+    @media print {
+
+      html,
+      body {
+        background: white !important;
+        overflow: visible !important;
+        height: auto !important;
+      }
+
+      .deck-container {
+        width: 100vw !important;
+        height: auto !important;
+        /* Libera a altura para empilhar as páginas */
+        max-width: none !important;
+        max-height: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        display: block !important;
+        overflow: visible !important;
+        /* Força o navegador a ver o restante dos slides */
+      }
+
+      .slide {
+        position: relative !important;
+        opacity: 1 !important;
+        transform: none !important;
+        display: flex !important;
+        height: 100vh !important;
+        /* Cada slide assume o tamanho exato de uma folha */
+        padding: 40px !important;
+        page-break-after: always !important;
+        /* Garante a quebra de página por slide */
+        break-after: page !important;
+      }
+
+      .controls,
+      .progress-container,
+      .footer-hint {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="deck-container" id="presentationDeck">
+
+    <!-- SLIDE 1: CAPA -->
+    <div class="slide active" style="justify-content: center; text-align: center; background: linear-gradient(to bottom, #ffffff, #f7fafc);">
+      <p style="color: #4A5568; font-weight: bold; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 8px;">Universidade Federal do Rio Grande do Norte</p>
+      <p style="color: var(--azulufrn); font-weight: bold; font-size: 1.1rem; margin-bottom: 30px;">DEPARTAMENTO DE ENGENHARIA ELÉTRICA — ELE0517 SISTEMAS DIGITAIS</p>
+      <h1 style="color: var(--azulufrn); font-size: 2.4rem; line-height: 1.2; margin-bottom: 25px; font-weight: 800;">
+        Implementação de Algoritmo de Máximo e Mínimo em Processador MIPS Monociclo
+      </h1>
+      <div style="width: 120px; height: 5px; background: var(--azulufrn); margin: 20px auto;"></div>
+      <p style="font-size: 1.3rem; color: #2D3748; margin-bottom: 40px;">
+        <strong>Alunos:</strong> Gustavo Guilherme Wanderley & Matteo Peixoto <br>
+        <span style="font-size: 1.05rem; color: #718096;"><strong>Orientador:</strong> Prof. Filipe Taveiros</span>
+      </p>
+    </div>
+
+    <!-- SLIDE 2: ESPECIFICAÇÃO DO PROBLEMA -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>O Problema Técnico e Vetor de Teste</h2>
+        <div class="slide-subheader">Slide 2 / 18</div>
+      </div>
+      <div class="slide-content grid-2">
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3>🎯 Escopo do Desafio</h3>
+            <p>Desenvolver um software em Assembly e adaptar uma arquitetura de hardware monociclo para ler, analisar e extrair extremos numéricos contidos em um array na RAM.</p>
+          </div>
+          <div>
+            <h3>📥 Estado Inicial da Memória RAM</h3>
+            <p>A memória foi populada consecutivamente com 8 elementos inteiros de 32 bits a partir do endereço base zero:</p>
+            <p style="background: #edf2f7; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 1.2rem; text-align: center; margin-top: 5px; font-weight: bold; color: var(--azul-escuro);">
+              [15, 42, 4, 89, 23, 7, 55, 12]
+            </p>
+          </div>
+        </div>
+        <div class="card success-card">
+          <h3>📤 Metas Logísticas de Execução</h3>
+          <ul>
+            <li>Varrer as posições da RAM sem deixar janelas ociosas.</li>
+            <li>Isolar dinamicamente o maior valor do vetor (89).</li>
+            <li>Isolar dinamicamente o menor valor do vetor (4).</li>
+            <li>Garantir a persistência salvando o 89 na <span class="highlight">posição 32</span> e o 4 na <span class="highlight">posição 36</span> da RAM ao fim da varredura.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3: CÓDIGO ASSEMBLY COMPLETO -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Programa Assembly MIPS Desenvolvido</h2>
+        <div class="slide-subheader">Slide 3 / 18</div>
+      </div>
+      <div class="slide-content grid-2">
+        <div style="height: 100%;">
+          <pre><span class="c">-- Rotina de Inicialização</span>
+addi $t0, $zero, 0   <span class="c">-- Ponteiro de endereço da RAM = 0</span>
+addi $t1, $zero, 32  <span class="c">-- Limite de parada (8 elementos * 4 bytes)</span>
+lw   $t2, 0($t0)     <span class="c">-- MAX provisório inicial = Vetor[0] (15)</span>
+lw   $t3, 0($t0)     <span class="c">-- MIN provisório inicial = Vetor[0] (15)</span>
+
+<span class="c">-- Laço de Repetição Principal (Loop)</span>
+addi $t0, $t0, 4     <span class="c">-- Avança o ponteiro para o próximo endereço</span>
+beq  $t0, $t1, FIM   <span class="c">-- Se ponteiro == 32, desvia para o encerramento</span>
+lw   $t5, 0($t0)     <span class="c">-- Carrega o elemento atual da RAM para $t5</span>
+<span class="k">max</span>  $t2, $t2, $t5   <span class="c">-- Nova Instrução: Atualiza o MAX se $t5 > $t2</span>
+<span class="k">min</span>  $t3, $t3, $t5   <span class="c">-- Nova Instrução: Atualiza o MIN se $t5 < $t3</span>
+j    16              <span class="c">-- Salto incondicional para o início do laço</span>
+
+<span class="c">-- Rotina de Salvamento e Encerramento</span>
+FIM:
+addi $s0, $zero, 32  <span class="c">-- Registrador base de escrita fixado em 32</span>
+sw   $t2, 0($s0)     <span class="c">-- Escreve o valor do MAX (89) na RAM[32]</span>
+sw   $t3, 4($s0)     <span class="c">-- Escreve o valor do MIN (4) na RAM[36]</span>
+j    52              <span class="c">-- Loop infinito de segurança (Trava o PC)</span></pre>
+        </div>
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3>💡 Análise do Código de Software</h3>
+            <p>O programa divide-se de forma clara em três etapas fundamentais:</p>
+            <br>
+            <ul>
+              <li><span class="highlight">Preparação:</span> Configura os registradores base de controle e espelha o primeiro elemento nos dois acumuladores.</li>
+              <li><span class="highlight">Varredura:</span> Atualiza as variáveis usando as instruções de hardware customizadas em apenas um ciclo de clock.</li>
+              <li><span class="highlight">Gravação:</span> Salva os extremos calculados de volta na memória e congela o Program Counter.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4: ENTIDADE DO TOP-LEVEL -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Arquitetura de Hardware: Módulo Top-Level</h2>
+        <div class="slide-subheader">Slide 4 / 18</div>
+      </div>
+      <div class="slide-content grid-2">
+        <div class="card">
+          <h3>🏢 Entidade maxmin_final</h3>
+          <p>Funciona como a infraestrutura central do processador. O seu papel é instanciar e interconectar os barramentos dos componentes principais:</p>
+          <br>
+          <ul>
+            <li><span class="highlight">Memória de Instruções (ROM):</span> Barramento combinacional estável de leitura do programa.</li>
+            <li><span class="highlight">Banco de Registradores:</span> Armazenamento temporário de dados e registradores de debug.</li>
+            <li><span class="highlight">ALU Estendida:</span> Unidade matemática com suporte aos novos operadores lógicos.</li>
+          </ul>
+        </div>
+        <div style="height: 100%;">
+          <pre><span class="k">entity</span> maxmin_final <span class="k">is</span>
+  <span class="k">Port</span> (
+    clk            : <span class="k">in  </span>STD_LOGIC;
+    reset          : <span class="k">in  </span>STD_LOGIC;
+    out_pc         : <span class="k">out </span>STD_LOGIC_VECTOR(31 <span class="k">downto 0);
+    out_alu_res    : <span class="k">out </span>STD_LOGIC_VECTOR(31 <span class="k">downto 0);
+    out_opcode     : <span class="k">out </span>STD_LOGIC_VECTOR(5 <span class="k">downto 0);
+    out_ALUControl : <span class="k">out </span>STD_LOGIC_VECTOR(2 <span class="k">downto 0);
+    out_WD         : <span class="k">out </span>STD_LOGIC_VECTOR(31 <span class="k">downto 0);
+    out_MemWrite   : <span class="k">out </span>STD_LOGIC
+  );
+<span class="k">end entity;</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: SINCRONISMO DO HARDWARE -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Sincronismo do Caminho de Dados</h2>
+        <div class="slide-subheader">Slide 5 / 18</div>
+      </div>
+      <div class="slide-content grid-2">
+        <div class="card alert-card">
+          <h3>⚠️ Elementos Síncronos (Dependem do Clock)</h3>
+          <p>Apenas os blocos que alteram o estado físico do hardware reagem de forma síncrona na borda de subida do clock:</p>
+          <br>
+          <ul>
+            <li>O registrador do Program Counter (PC).</li>
+            <li>A gravação de dados dentro das células do Banco de Registradores.</li>
+            <li>A persistência e gravação final de variáveis na Memória RAM.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>⚡ Elementos Combinacionais (Imediatos)</h3>
+          <p>Fluem de maneira contínua através dos fios lógicos, atualizando as saídas instantaneamente ao mudar as entradas:</p>
+          <br>
+          <ul>
+            <li>A busca das instruções na memória ROM.</li>
+            <li>A decodificação de comandos na Unidade de Controle.</li>
+            <li>Os cálculos e testes de comparação internos da ALU.</li>
+            <li>A leitura assíncrona de dados armazenados na RAM.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6: EXTENSÃO DA UNIDADE DE CONTROLE -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Extensão da Unidade de Controle</h2>
+        <div class="slide-subheader">Slide 6 / 18</div>
+      </div>
+      <div class="slide-content grid-2">
+        <div style="height: 100%;">
+          <pre><span class="k">case</span> opcode <span class="k">is</span>
+  <span class="k">when</span> <span class="l">"000000"</span> => <span class="c">-- Tipo-R Geral</span>
+    RegWrite <= <span class="l">'1'</span>; RegDst <= <span class="l">'1'</span>;
+    <span class="k">case</span> funct <span class="k">is</span>
+      <span class="k">when</span> <span class="l">"100000"</span> => ALUControl <= <span class="l">"010"</span>; <span class="c">-- add</span>
+      <span class="k">when</span> <span class="l">"000101"</span> => ALUControl <= <span class="l">"011"</span>; <span class="c">-- max</span>
+      <span class="k">when</span> <span class="l">"000110"</span> => ALUControl <= <span class="l">"100"</span>; <span class="c">-- min</span>
+      <span class="k">when others</span>   => ALUControl <= <span class="l">"000"</span>;
+    <span class="k">end case;</span>
+<span class="k">end case;</span></pre>
+        </div>
+        <div class="card">
+          <h3>🧠 Decodificação por Nível Aninhado</h3>
+          <p>Mantivemos as novas instruções sob a raiz do formato Tipo-R para preservar a compatibilidade nativa da arquitetura:</p>
+          <br>
+          <ul>
+            <li>A unidade lê o Opcode geral de zeros <span class="highlight">"000000"</span>.</li>
+            <li>Ativa as flags de permissão de escrita <span class="highlight">RegWrite</span> e seletor de destino <span class="highlight">RegDst</span>.</li>
+            <li>Um segundo switch interno de controle analisa o campo Funct para direcionar o código operacional correto para a ALU.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7: SINAIS DE CONTROLE MAPEADOS -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Mapeamento Prático dos Sinais de Controle</h2>
+        <div class="slide-subheader">Slide 7 / 18</div>
+      </div>
+      <div class="slide-content" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <p style="font-size: 1.1rem; margin-bottom: 8px;">Tabela de parametrização lógica das portas de controle disparadas pela Unidade de Controle:</p>
+        <table class="slide-table" style="font-size: 0.85rem;">
+          <thead>
+            <tr>
+              <th>Instrução</th>
+              <th>Opcode</th>
+              <th>RegDst</th>
+              <th>RegWrite</th>
+              <th>ALUSrc</th>
+              <th>Branch</th>
+              <th>MemWrite</th>
+              <th>MemtoReg</th>
+              <th>Jump</th>
+              <th>ALUControl</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background: #e6f0ff; font-weight: bold;">
+              <td>max (Tipo-R)</td>
+              <td>000000</td>
+              <td>1</td>
+              <td>1</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>011 (MAX)</td>
+            </tr>
+            <tr style="background: #e6f0ff; font-weight: bold;">
+              <td>min (Tipo-R)</td>
+              <td>000000</td>
+              <td>1</td>
+              <td>1</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>100 (MIN)</td>
+            </tr>
+            <tr>
+              <td>lw</td>
+              <td>100011</td>
+              <td>0</td>
+              <td>1</td>
+              <td>1</td>
+              <td>0</td>
+              <td>0</td>
+              <td>1</td>
+              <td>0</td>
+              <td>010 (Soma)</td>
+            </tr>
+            <tr>
+              <td>sw</td>
+              <td>101011</td>
+              <td>0</td>
+              <td>0</td>
+              <td>1</td>
+              <td>0</td>
+              <td>1</td>
+              <td>0</td>
+              <td>0</td>
+              <td>010 (Soma)</td>
+            </tr>
+            <tr>
+              <td>addi</td>
+              <td>001000</td>
+              <td>0</td>
+              <td>1</td>
+              <td>1</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>010 (Soma)</td>
+            </tr>
+            <tr>
+              <td>beq</td>
+              <td>000100</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>1</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>110 (Sub)</td>
+            </tr>
+            <tr>
+              <td>j</td>
+              <td>000010</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>0</td>
+              <td>1</td>
+              <td>000</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="background: var(--cinza-claro); padding: 10px; border-radius: 4px; font-size: 1rem; border-left: 4px solid var(--azulufrn); margin-top: 8px;">
+          <strong>Obs:</strong> Nas instruções <span class="highlight">max</span> e <span class="highlight">min</span>, a flag de controle ALUSrc é fixada em zero. Isso desativa o Extensor de Sinal e força a segunda entrada da ALU a receber o valor puro do registrador temporário.
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: EXTENSÃO DA ALU -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Modificação Interna da ALU em VHDL</h2>
+        <div class="slide-subheader">Slide 8 / 18</div>
+      </div>
+      <div class="slide-content grid-2">
+        <div class="card">
+          <h3>🛠️ Lógica de Comparação com Sinal</h3>
+          <p>Injetamos dois novos blocos operacionais baseados em comparadores condicionais com sinal (signed) para processar os barramentos A e B:</p>
+          <br>
+          <ul>
+            <li>Se ALUControl for <span class="highlight">"011"</span>, a ALU ativa a diretiva de máximo e direciona o maior valor para a saída.</li>
+            <li>Se ALUControl for <span class="highlight">"100"</span>, a ALU ativa a diretiva de mínimo e direciona o menor valor para a saída.</li>
+          </ul>
+        </div>
+        <div style="height: 100%;">
+          <pre><span class="k">case</span> ALUControl <span class="k">is</span>
+  <span class="k">when</span> <span class="l">"011"</span> => <span class="c">-- Operação MAX</span>
+    <span class="k">if</span> signed(A) > signed(B) <span class="k">then </span>
+      resultado <= A;
+    <span class="k">else </span>
+      resultado <= B; 
+    <span class="k">end if;</span>
+  <span class="k">when</span> <span class="l">"100"</span> => <span class="c">-- Operação MIN</span>
+    <span class="k">if</span> signed(A) < signed(B) <span class="k">then </span>
+      resultado <= A;
+    <span class="k">else </span>
+      resultado <= B; 
+    <span class="k">end if;</span>
+<span class="k">end case;</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: CÓDIGO DE MÁQUINA (PARTE 1) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Programa Completo e Código de Máquina</h2>
+        <div class="slide-subheader">Slide 9 / 18</div>
+      </div>
+      <div class="slide-content" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <p style="font-size: 1.05rem; margin-bottom: 5px;">Mapeamento rigoroso e decodificação analítica de todos os campos binários das instruções de inicialização e controle desenvolvidas:</p>
+        <table class="slide-table">
+          <thead>
+            <tr>
+              <th>PC</th>
+              <th>Instrução Assembly</th>
+              <th>op (6b)</th>
+              <th>rs (5b)</th>
+              <th>rt (5b)</th>
+              <th>rd (5b)</th>
+              <th>shamt (5b)</th>
+              <th>funct/imm</th>
+              <th>Hex (L-E)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>0x00</td>
+              <td>addi $t0, $0, 0</td>
+              <td>001000</td>
+              <td>00000</td>
+              <td>01000</td>
+              <td>-</td>
+              <td>-</td>
+              <td>0x0000 (16b)</td>
+              <td><strong>20080000</strong></td>
+            </tr>
+            <tr>
+              <td>0x04</td>
+              <td>addi $t1, $0, 32</td>
+              <td>001000</td>
+              <td>00000</td>
+              <td>01001</td>
+              <td>-</td>
+              <td>-</td>
+              <td>0x0020 (16b)</td>
+              <td><strong>20090020</strong></td>
+            </tr>
+            <tr>
+              <td>0x08</td>
+              <td>lw $t2, 0($t0)</td>
+              <td>100011</td>
+              <td>01000</td>
+              <td>01010</td>
+              <td>-</td>
+              <td>-</td>
+              <td>0x0000 (16b)</td>
+              <td><strong>8D0A0000</strong></td>
+            </tr>
+            <tr>
+              <td>0x0C</td>
+              <td>lw $t3, 0($t0)</td>
+              <td>100011</td>
+              <td>01000</td>
+              <td>01011</td>
+              <td>-</td>
+              <td>-</td>
+              <td>0x0000 (16b)</td>
+              <td><strong>8D0B0000</strong></td>
+            </tr>
+            <tr>
+              <td>0x10</td>
+              <td>addi $t0, $t0, 4</td>
+              <td>001000</td>
+              <td>01000</td>
+              <td>01000</td>
+              <td>-</td>
+              <td>-</td>
+              <td>0x0004 (16b)</td>
+              <td><strong>21080004</strong></td>
+            </tr>
+            <tr>
+              <td>0x14</td>
+              <td>beq $t0, $t1, 4</td>
+              <td>000100</td>
+              <td>01000</td>
+              <td>01001</td>
+              <td>-</td>
+              <td>-</td>
+              <td>0x0004 (16b)</td>
+              <td><strong>11090004</strong></td>
+            </tr>
+            <tr>
+              <td>0x18</td>
+              <td>lw $t5, 0($t0)</td>
+              <td>100011</td>
+              <td>01000</td>
+              <td>01101</td>
+              <td>-</td>
+              <td>-</td>
+              <td>0x0000 (16b)</td>
+              <td><strong>8D0D0000</strong></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="background: var(--cinza-claro); padding: 10px; border-radius: 4px; font-size: 0.95rem; border-left: 4px solid var(--azulufrn); margin-top: 5px;">
+          <strong>Cálculo do Salto Relativo (beq):</strong> O campo de imediato armazena o valor inteiro 4. Em hardware, a CPU calcula o endereço alvo aplicando a fórmula: Endereço Target = PC_plus4 + (imediato * 4) = 24 + (4 * 4) = 40 (0x28). Isso faz o fluxo pular o laço perfeitamente quando o vetor termina.
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10: CÓDIGO DE MÁQUINA (PARTE 2) -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Programa Completo e Código de Máquina</h2>
+        <div class="slide-subheader">Slide 10 / 18</div>
+      </div>
+      <div class="slide-content" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <p style="font-size: 1.05rem; margin-bottom: 5px;">Inclusão das linhas finais corrigidas. Mapeamento das rotinas de cálculo customizado e gravação síncrona na RAM:</p>
+        <table class="slide-table">
+          <thead>
+            <tr>
+              <th>PC</th>
+              <th>Instrução Assembly</th>
+              <th>op (6b)</th>
+              <th>rs (5b)</th>
+              <th>rt (5b)</th>
+              <th>rd (5b)</th>
+              <th>shamt (5b)</th>
+              <th>funct/imm</th>
+              <th>Hex (L-E)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background: #e6f0ff; font-weight: bold;">
+              <td>0x1C</td>
+              <td>max $t2, $t2, $t5</td>
+              <td>000000</td>
+              <td>01010</td>
+              <td>01101</td>
+              <td>01010</td>
+              <td>00000</td>
+              <td>000101 (6b)</td>
+              <td><strong>014D5005</strong></td>
+            </tr>
+            <tr style="background: #e6f0ff; font-weight: bold;">
+              <td>0x20</td>
+              <td>min $t3, $t3, $t5</td>
+              <td>000000</td>
+              <td>01011</td>
+              <td>01101</td>
+              <td>01011</td>
+              <td>00000</td>
+              <td>000110 (6b)</td>
+              <td><strong>016D5806</strong></td>
+            </tr>
+            <tr>
+              <td>0x24</td>
+              <td>j 4</td>
+              <td>000010</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>0x000004 (26b)</td>
+              <td><strong>08000004</strong></td>
+            </tr>
+            <tr style="background: #fff5f5; font-weight: bold;">
+              <td>0x28</td>
+              <td>addi $s0, $0, 32</td>
+              <td>001000</td>
+              <td>00000</td>
+              <td>10000</td>
+              <td>-</td>
+              <td>-</td>
+              <td>0x0020 (16b)</td>
+              <td><strong>20100020</strong></td>
+            </tr>
+            <tr>
+              <td>0x2C</td>
+              <td>sw $t2, 0($s0)</td>
+              <td>101011</td>
+              <td>10000</td>
+              <td>01010</td>
+              <td>-</td>
+              <td>-</td>
+              <td>0x0000 (16b)</td>
+              <td><strong>AE0A0000</strong></td>
+            </tr>
+            <tr>
+              <td>0x30</td>
+              <td>sw $t3, 4($s0)</td>
+              <td>101011</td>
+              <td>10000</td>
+              <td>01011</td>
+              <td>-</td>
+              <td>-</td>
+              <td>0x0004 (16b)</td>
+              <td><strong>AE0B0004</strong></td>
+            </tr>
+            <tr style="background: #fff5f5; font-weight: bold;">
+              <td>0x34</td>
+              <td>j 13</td>
+              <td>000010</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>-</td>
+              <td>0x00000D (26b)</td>
+              <td><strong>0800000D</strong></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="background: var(--cinza-claro); padding: 10px; border-radius: 4px; font-size: 0.95rem; border-left: 4px solid var(--azulufrn); margin-top: 5px;">
+          <strong>Mapeamento do Salto Absoluto Final (j 13):</strong> Para travar a CPU no endereço físico 52 (0x34), o campo target armazena o valor absoluto dividido por 4 (52 / 4 = 13, ou seja, 0x0D em bits). O hardware desloca 2 bits à esquerda e reconstrói o alvo fixo, impedindo falhas de execução.
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11: ORGANIZAÇÃO FÍSICA LITTLE ENDIAN -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Alinhamento Little-Endian na Memória ROM</h2>
+        <div class="slide-subheader">Slide 11 / 18</div>
+      </div>
+      <div class="slide-content grid-2">
+        <div class="card">
+          <h3>🔄 Inversão Física de Bytes</h3>
+          <p>A entidade memoria_instrucoes foi modelada fisicamente como uma matriz linear de bytes isolados de 8 bits. Para respeitar o padrão Little-Endian, o byte menos significativo (LSB) deve ocupar o menor endereço de índice:</p>
+          <br>
+          <p>Por exemplo, a instrução 0x21080004 (PC = 16) é mapeada nos slots contíguos de forma invertida: slot 16 recebe X"04", slot 17 recebe X"00", slot 18 recebe X"08" e o slot 19 recebe X"21".</p>
+        </div>
+        <div style="height: 100%;">
+          <pre><span class="k">architecture</span> rtl <span class="k">of</span> memoria_instrucoes <span class="k">is</span>
+<span class="k">begin</span>
+  idx <= to_integer(unsigned(A(6 <span class="k">downto 0)));
+
+  -- Reconstrução Combinacional da Palavra</span>
+  RD <= mem(idx + 3) &amp;
+        mem(idx + 2) &amp;
+        mem(idx + 1) &amp;
+        mem(idx)
+        <span class="k">when</span> idx <= 124 <span class="k">else</span> (others => <span class="l">'0'</span>);
+<span class="k">end architecture;</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 12: ANÁLISE COMPLETA DO WAVEFORM COM ESCALA CORRIGIDA -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Análise do Waveform: Estágio de Carga Inicial</h2>
+        <div class="slide-subheader">Slide 12 / 18</div>
+      </div>
+      <div class="slide-content">
+        <div class="waveform-wide-box">
+          <img src="waveform_2.png" alt="Waveform Unsigned Decimal - Estágio de Carga Inicial">
+        </div>
+        <div class="card">
+          <h3>🔍 Início da Simulação Funcional</h3>
+          <p>out_pc inicia marchando linearmente em passos estáveis de 4 bytes (endereços 0, 4, 8, 12) a cada intervalo cíclico de clock. O sinal out_RegWrite opera ativado em nível lógico alto ('1') durante os ciclos iniciais de preparação, liberando a carga das constantes. Ao acessar as primeiras palavras contíguas mapeadas na RAM, os registradores out_reg_t2 (MAX) e out_reg_t3 (MIN) absorvem instantaneamente o valor inicial **15**.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 13: ANÁLISE COMPLETA DO WAVEFORM COM ESCALA CORRIGIDA -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Análise do Waveform: Convergência do Laço</h2>
+        <div class="slide-subheader">Slide 13 / 18</div>
+      </div>
+      <div class="slide-content">
+        <div class="waveform-wide-box">
+          <img src="waveform_2.png" alt="Waveform Unsigned Decimal - Convergência do Laço">
+        </div>
+        <div class="card">
+          <h3>🔄 Varredura Ativa do Vetor</h3>
+          <p>O ponteiro de varredura out_reg_t0 incrementa de forma contínua, assumindo os endereços físicos das células: 4, 8, 12, 16, 20, 24, 28, 32. O barramento de dados out_reg_t5 espelha os elementos carregados linha por linha: **42, 4, 89, 23, 7, 55, 12**. A ALU customizada opera em ciclo único: t2 (MAX) atualiza-se para 42 e fixa-se no pico **89**, enquanto t3 (MIN) sofre uma queda imediata estabilizando em **4**.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 14: ANÁLISE COMPLETA DO WAVEFORM COM ESCALA CORRIGIDA -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Análise do Waveform: Escrita síncrona na RAM</h2>
+        <div class="slide-subheader">Slide 14 / 18</div>
+      </div>
+      <div class="slide-content">
+        <div class="waveform-wide-box">
+          <img src="waveform_2.png" alt="Waveform Unsigned Decimal - Escrita Síncrona na RAM">
+        </div>
+        <div class="card success-card">
+          <h3>💾 Escrita e Consolidação dos Extremos</h3>
+          <p>O ponteiro atinge o valor limite de parada (32) e o desvio condicional do beq quebra o laço. A flag de gravação out_MemWrite satura em nível alto ('1'). No ciclo de escrita do máximo, a saída da ALU aponta para o endereço físico 32 e out_WD descarrega o valor **89** para a RAM. No ciclo imediatamente consecutivo, a ALU altera o ponteiro para 36 e out_WD injeta o valor mínimo **4**, assegurando a persistência completa dos dados.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 15: ADIÇÃO DO SLIDE DE PARAMETRIZAÇÃO TEMPORAL CORRIGIDA -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Parametrização Temporal do Experimento</h2>
+        <div class="slide-subheader">Slide 15 / 18</div>
+      </div>
+      <div class="slide-content grid-2">
+        <div class="card">
+          <h3>⏳ Definição do Intervalo de Simulação</h3>
+          <p>O tempo total necessário para simular e visualizar toda a dinâmica estrutural do hardware no simulador foi projetado multiplicando o número de ciclos totais pelo período estabelecido:</p>
+          <br>
+          <ul>
+            <li>Contagem de Instruções Dinâmicas (N): <span class="highlight">52 instruções</span>.</li>
+            <li>Como a CPU é Monociclo, 52 instruções equivalem a exatamente <span class="highlight">52 ciclos de clock</span>.</li>
+            <li>Período de Clock adotado (Tc): <span class="highlight">800 ps</span> (Frequência de 1.25 GHz).</li>
+          </ul>
+        </div>
+        <div class="card success-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3>🧮 Modelagem Analítica do Tempo Total</h3>
+            <p>Aplicando a equação regulamentar de desempenho da CPU fornecida na disciplina:</p>
+            <p style="font-family: monospace; font-size: 1.2rem; background: #fff; padding: 8px; border-radius: 4px; border-left: 4px solid var(--sucesso); text-align: center; font-weight: bold; margin-top: 5px;">
+              Texec = N * CPI * Tc
+            </p>
+            <br>
+            <p style="font-family: monospace; font-size: 1.15rem; text-align: center; font-weight: bold; color: var(--azul-escuro);">
+              Texec = 52 * 1 * 800 ps = 41.600 ps
+            </p>
+          </div>
+          <div style="background: #e6f0ff; padding: 10px; border-radius: 4px; font-size: 0.98rem; font-weight: bold; text-align: center; color: var(--azul-escuro);">
+            ⏱️ Conclusão Prática: A simulação funcional exige uma janela de tempo mínima de 41,6 ns para exibir a gravação do último elemento na memória RAM.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 16: VALIDAÇÃO MÉTRICA DO CPI -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Validação Métrica de Desempenho</h2>
+        <div class="slide-subheader">Slide 16 / 18</div>
+      </div>
+      <div class="slide-content grid-2">
+        <div class="card">
+          <h3>📊 Análise do CPI Médio do Sistema</h3>
+          <p>Por tratar-se de uma arquitetura estrutural baseada em um ciclo de processamento estritamente <span class="highlight">Monociclo (Single Cycle)</span>, cada instrução gasta exatamente um pulso completo de clock para trafegar pelo caminho de dados:</p>
+          <br>
+          <p style="text-align: center; font-size: 1.5rem; background: #edf2f7; padding: 10px; border-radius: 4px; font-weight: bold; color: var(--azulufrn);">
+            CPI Médio = 1.00
+          </p>
+        </div>
+        <div class="card success-card">
+          <h3>🚀 Redução do Caminho Crítico</h3>
+          <p>Como o CPI é fixo em 1 no hardware monociclo, a única forma de otimizar o tempo total de CPU (Tempo de CPU) é reduzindo drasticamente a quantidade de instruções que o compilador precisa gerar para resolver o problema:</p>
+          <br>
+          <p style="text-align: center; font-size: 1.2rem; font-family: monospace; background: #e6f0ff; padding: 8px; border-radius: 4px; font-weight: bold;">
+            Tempo de CPU = Contagem de Instrucoes * CPI * Periodo do Clock
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 17: COMPROVAÇÃO MATEMÁTICA DETALHADA -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Demonstração Matemática: Contagem de Instruções (N)</h2>
+        <div class="slide-subheader">Slide 17 / 18</div>
+      </div>
+      <div class="slide-content grid-2">
+        <div class="card" style="font-size: 0.95rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3>❌ Cenário 1: MIPS Padrão (Nativo)</h3>
+            <p>Mnemônicos executados dinamicamente com base na ROM original:</p>
+            <br>
+            <ul style="list-style-type: none; margin-left: 5px; line-height: 1.4;">
+              <li><strong>Inicialização (4 inst.):</strong> addi, addi, lw, lw</li>
+              <li><strong>Laço Dinâmico (7 elementos):</strong></li>
+              <li style="padding-left: 15px; color: var(--azul-escuro);">• Elementos com troca (42, 4, 89): <span class="highlight">9 inst. cada</span><br>
+                (addi + beq + lw) + (slt + beq + add) + (slt + beq) + j</li>
+              <li style="padding-left: 15px; color: var(--azul-escuro);">• Elementos sem troca (23, 7, 55, 12): <span class="highlight">8 inst. cada</span><br>
+                (addi + beq + lw) + (slt + beq) + (slt + beq) + j</li>
+              <li><strong>Última Passagem (2 inst.):</strong> addi, beq (desvia para o fim)</li>
+              <li><strong>Escrita e Fim (4 inst.):</strong> addi, sw, sw, j</li>
+            </ul>
+          </div>
+          <p style="font-size: 1.05rem; font-weight: bold; color: var(--alerta); text-align: center; background: #fff5f5; padding: 6px; border-radius: 4px; margin-top: 5px;">
+            N = 4 + (3 * 9) + (4 * 8) + 2 + 4 = 69 instruções
+          </p>
+        </div>
+
+        <div class="card success-card" style="font-size: 0.95rem; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3>✔️ Cenário 2: Nosso MIPS (Com max/min)</h3>
+            <p>Mnemônicos executados após a otimização estrutural da ALU:</p>
+            <br>
+            <ul style="list-style-type: none; margin-left: 5px; line-height: 1.4;">
+              <li><strong>Inicialização (4 inst.):</strong> addi, addi, lw, lw</li>
+              <li><strong>Laço Dinâmico (7 elementos):</strong></li>
+              <li style="padding-left: 15px; font-weight: bold; color: var(--azulufrn);">• Corpo Fixo do Loop: 6 inst. por iteração</li>
+              <li style="padding-left: 15px; font-family: monospace; background: #fff; padding: 4px; border-radius: 4px; border-left: 3px solid var(--sucesso); font-size: 0.85rem;">
+                addi + beq + lw + max + min + j
+              </li>
+              <li style="padding-left: 15px; margin-top: 5px;">• Total do laço ativo: 7 elementos * 6 inst. = 42 inst.</li>
+              <li><strong>Última Passagem (2 inst.):</strong> addi, beq (desvia para fora)</li>
+              <li><strong>Escrita e Fim (4 inst.):</strong> addi, sw, sw, j</li>
+            </ul>
+          </div>
+          <div>
+            <p style="font-size: 1.05rem; font-weight: bold; color: var(--sucesso); text-align: center; background: #f6fff6; padding: 6px; border-radius: 4px; margin-bottom: 5px;">
+              N = 4 + 42 + 2 + 4 = 52 instruções
+            </p>
+            <div style="background: #e6f0ff; padding: 8px; border-radius: 4px; font-size: 0.88rem; font-weight: bold; text-align: center; color: var(--azul-escuro);">
+              📉 Redução real de 69 para 52 mnemônicos executados. Economia matemática de 24,6% no tempo total de execução (Texec).
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 18: CONCLUSÃO -->
+    <div class="slide">
+      <div class="slide-header">
+        <h2>Conclusão do Projeto e Encerramento</h2>
+        <div class="slide-subheader">Slide 18 / 18</div>
+      </div>
+      <div class="slide-content grid-2">
+        <div class="card">
+          <h3>✔️ Resultados</h3>
+          <ul>
+            <li>Integração síncrona da estrutura completa das fatias de barramentos lógicos desenvolvidos em VHDL.</li>
+            <li>Extensão bem-sucedida e modular da ISA nativa do MIPS utilizando o formato padrão Tipo-R.</li>
+            <li>Validação de simulação temporal no simulador, levando em consideração o tempo calculado.</li>
+          </ul>
+        </div>
+        <div class="card success-card" style="display: flex; flex-direction: column; justify-content: center; text-align: center;">
+          <h2 style="color: var(--azulufrn); font-weight: 800; font-size: 2.2rem;">Obrigado!</h2>
+          <br>
+          <p style="color: #4A5568; font-size: 0.7rem;">
+            PATTERSON, David A.; HENNESSY, John L. Organização e Projeto de Computadores: A Interface Hardware/Software. 5. ed. Rio de Janeiro: Elsevier, 2014.
+          </p>
+          <br>
+          <p style="color: #4A5568; font-size: 0.7rem;">
+            TAVEIROS, Filipe. Roteiro de Laboratório: Implementação e Extensão do Processador MIPS Monociclo em VHDL. Natal: Departamento de Engenharia Elétrica, Universidade Federal do Rio Grande do Norte (UFRN), 2026.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROLES -->
+    <div class="controls">
+      <button class="btn btn-fullscreen" id="fullscreenBtn">📺 Modo Apresentação</button>
+      <button class="btn" id="prevBtn" disabled>◀ Anterior</button>
+      <button class="btn" id="nextBtn">Próximo ▶</button>
+    </div>
+
+    <!-- BARRA DE PROGRESSO -->
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+  </div>
+
+  <div class="footer-hint" id="slideIndicator">Slide 1 / 18</div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const progressBar = document.getElementById('progressBar');
+    const slideIndicator = document.getElementById('slideIndicator');
+    const container = document.getElementById('presentationDeck');
+
+    let currentSlide = 0;
+
+    function updateSlide() {
+      slides.forEach((slide, index) => {
+        slide.classList.toggle('active', index === currentSlide);
+      });
+
+      prevBtn.disabled = currentSlide === 0;
+      nextBtn.disabled = currentSlide === slides.length - 1;
+
+      const percentage = (currentSlide / (slides.length - 1)) * 100;
+      progressBar.style.width = `${percentage}%`;
+
+      slideIndicator.innerHTML = `Slide ${currentSlide + 1} / ${slides.length}`;
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        container.requestFullscreen().catch(err => {
+          alert(`Erro ao ativar modo apresentação: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    });
+
+    fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (currentSlide < slides.length - 1) {
+          currentSlide++;
+          updateSlide();
+        }
+      } else if (e.key === 'ArrowLeft') {
+        if (currentSlide > 0) {
+          currentSlide--;
+          updateSlide();
+        }
+      } else if (e.key.toLowerCase() === 'f') {
+        toggleFullscreen();
+      }
+    });
+
+    updateSlide();
+  </script>
+</body>
+
+</html>
