@@ -288,6 +288,95 @@
       z-index: 10;
     }
 
+    /* ============================================================
+       RESPONSIVIDADE MOBILE 
+       ============================================================ */
+    @media (max-width: 768px) {
+      body {
+        overflow: auto; /* Permite rolagem na página se o celular for muito pequeno */
+      }
+
+      .deck-container {
+        width: 100vw;
+        height: 100vh;
+        max-height: none;
+        max-width: none;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .slide {
+        padding: 20px 25px;
+        overflow-y: auto; /* Permite rolar o conteúdo do slide verticalmente se faltar espaço */
+      }
+
+      .slide-header h2 {
+        font-size: 1.4rem;
+      }
+
+      .slide-content {
+        font-size: 1rem;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr; /* Quebra as duas colunas em uma só vertical */
+        gap: 15px;
+        height: auto;
+      }
+
+      .card h3 {
+        font-size: 1.1rem;
+      }
+
+      pre {
+        font-size: 0.75rem;
+        height: auto;
+        max-height: 300px;
+      }
+
+      /* Força a tabela de máquina e os barramentos a não estourarem a tela */
+      .slide-table {
+        font-size: 0.65rem;
+        display: block;
+        overflow-x: auto; /* Cria rolagem lateral na tabela se necessário */
+        white-space: nowrap;
+      }
+
+      /* CONTAINER DA WAVEFORM COM ROLAGEM LATERAL NO CELULAR */
+      .waveform-wide-box {
+        overflow-x: auto; /* Permite arrastar para o lado para ver os sinais do Quartus */
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .waveform-wide-box img {
+        width: auto; /* Impede a imagem ultrawide de ser esmagada na vertical */
+        height: 180px; /* Mantém uma altura fixa boa para visualização no celular */
+        max-width: none;
+      }
+
+      .controls {
+        bottom: 10px;
+        right: 15px;
+        gap: 6px;
+      }
+
+      .btn {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+      }
+
+      .btn-fullscreen {
+        display: none; /* Esconde o modo tela cheia que não faz sentido no mobile */
+      }
+
+      .footer-hint {
+        bottom: 15px;
+        left: 15px;
+        font-size: 0.75rem;
+      }
+    }
+
     @media print {
 
       html,
