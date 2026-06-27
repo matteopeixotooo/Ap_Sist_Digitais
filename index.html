@@ -289,53 +289,71 @@
     }
 
     /* ============================================================
-       RESPONSIVIDADE MOBILE CORRIGIDA (SEM SOBREPOSIÇÃO DE BOTÕES)
+       REVOLUÇÃO MOBILE: FLUXO CONTÍNUO DE CIMA PARA BAIXO (SCROLL)
        ============================================================ */
     @media (max-width: 768px) {
       body {
-        overflow: hidden;
+        overflow-y: auto !important; /* Libera o scroll geral da página */
+        overflow-x: hidden !important;
+        height: auto !important;
+        background-color: var(--cinza-escuro);
+        padding: 10px 0;
       }
 
       .deck-container {
-        width: 100vw;
-        height: 100vh;
-        max-height: none;
-        max-width: none;
-        border-radius: 0;
-        box-shadow: none;
+        width: 100vw !important;
+        height: auto !important; /* Libera o container para esticar com o conteúdo */
+        max-height: none !important;
+        max-width: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        display: flex !important;
+        flex-direction: column !important; /* Empilha os slides verticalmente */
+        background: transparent !important;
+        gap: 15px; /* Cria um respiro limpo entre um slide e outro */
       }
 
       .slide {
-        /* Aumentamos o padding inferior para 100px para criar uma área segura onde os botões não cobrem o texto */
-        padding: 15px 20px 100px 20px !important; 
-        overflow-y: auto !important;
-        width: 100%;
-        box-sizing: border-box;
-        height: 100% !important;
+        position: relative !important;
+        opacity: 1 !important;
+        transform: none !important;
+        pointer-events: auto !important;
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important; /* Cada slide cresce de acordo com o conteúdo interno */
+        min-height: auto !important;
+        padding: 25px 20px !important;
+        border-radius: 8px; /* Dá um aspecto de 'folha/card' para cada slide na linha do tempo */
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        width: 94vw !important;
+        margin: 0 auto !important; /* Centraliza os blocos na tela do celular */
       }
 
       .slide-header {
         margin-bottom: 15px;
-        padding-bottom: 5px;
+        padding-bottom: 8px;
+        border-bottom: 3px solid var(--azulufrn);
       }
 
       .slide-header h2 {
-        font-size: 1.25rem;
+        font-size: 1.35rem;
         line-height: 1.2;
-        max-width: 70%; /* Impede o título de atropelar o indicador do slide no topo */
       }
       
+      /* Mantém o número do slide discreto no topo direito de cada folha empilhada */
       .slide-subheader {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
       }
 
       .slide-content {
-        font-size: 0.95rem;
+        font-size: 0.98rem;
         width: 100%;
+        overflow: visible !important; /* Evita qualquer corte de texto */
       }
 
       .grid-2 {
-        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-columns: minmax(0, 1fr) !important; /* Garante que as duas colunas quebrem em uma só */
         gap: 12px;
         height: auto;
       }
@@ -345,34 +363,25 @@
         width: 100%;
         box-sizing: border-box;
         padding: 15px;
-        margin-bottom: 5px;
+        margin-bottom: 0;
       }
 
       .card h3 {
-        font-size: 1rem;
-      }
-
-      ul, ol {
-        margin-left: 15px;
-      }
-
-      li {
-        margin-bottom: 6px;
+        font-size: 1.05rem;
       }
 
       pre {
         font-size: 0.72rem;
         height: auto;
-        max-height: 220px;
+        max-height: none; /* Código expande para mostrar tudo sem barra de rolagem vertical */
         white-space: pre;
-        overflow-x: auto !important;
+        overflow-x: auto !important; /* Scroll horizontal fica exclusivo dentro do código */
         width: 100%;
         box-sizing: border-box;
-        -webkit-overflow-scrolling: touch;
       }
 
       .slide-table {
-        font-size: 0.62rem;
+        font-size: 0.65rem;
         display: block;
         overflow-x: auto;
         white-space: nowrap;
@@ -383,6 +392,7 @@
         overflow-x: auto;
         justify-content: flex-start;
         width: 100%;
+        margin-bottom: 15px;
         -webkit-overflow-scrolling: touch;
       }
 
@@ -392,54 +402,14 @@
         max-width: none;
       }
 
-      /* BARRA DE BOTÕES COM FUNDO SÓLIDO PARA NÃO MISTURAR COM O TEXTO ATRÁS */
-      .controls {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        height: 60px;
-        background: #ffffff; /* Fundo branco para isolar os botões do texto que rola */
-        border-top: 1px solid #e2e8f0;
-        padding: 0 20px;
-        margin: 0;
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        gap: 10px;
-        box-sizing: border-box;
-        z-index: 100; /* Garante que fica sempre por cima de tudo */
-      }
-
-      .btn {
-        padding: 10px 16px;
-        font-size: 0.8rem;
-        height: 40px;
-      }
-
-      .btn-fullscreen {
-        display: none;
-      }
-
-      /* AJUSTE DO INDICADOR DO RODAPÉ (SLIDE X / 18) */
+      /* ❌ ELIMINA OS BOTÕES E BARRAS QUE ESTORVAVAM NO MOBILE */
+      .controls,
+      .progress-container,
       .footer-hint {
-        position: absolute;
-        bottom: 20px;
-        left: 20px;
-        font-size: 0.8rem;
-        font-weight: bold;
-        color: #4a5568;
-        z-index: 101; /* Fica acima do fundo branco da barra de botões */
-        margin: 0;
-        padding: 0;
-      }
-      
-      .progress-container {
-        bottom: 60px; /* Joga a barra de progresso para cima da barra de botões */
-        z-index: 102;
+        display: none !important; /* Some com toda a tralha de navegação na versão celular */
       }
     }
+    
     @media print {
 
       html,
