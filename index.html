@@ -289,11 +289,11 @@
     }
 
     /* ============================================================
-       RESPONSIVIDADE MOBILE 
+       RESPONSIVIDADE MOBILE CORRIGIDA (SEM ESTOURAR A TELA)
        ============================================================ */
     @media (max-width: 768px) {
       body {
-        overflow: auto; /* Permite rolagem na página se o celular for muito pequeno */
+        overflow-x: hidden; /* Garante que a página não role para os lados de jeito nenhum */
       }
 
       .deck-container {
@@ -306,52 +306,72 @@
       }
 
       .slide {
-        padding: 20px 25px;
-        overflow-y: auto; /* Permite rolar o conteúdo do slide verticalmente se faltar espaço */
+        padding: 15px 20px;
+        overflow-y: auto;
+        width: 100%;
+        box-sizing: border-box;
       }
 
       .slide-header h2 {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
+        line-height: 1.2;
+      }
+      
+      .slide-subheader {
+        font-size: 0.75rem;
       }
 
       .slide-content {
-        font-size: 1rem;
+        font-size: 0.95rem;
+        width: 100%;
       }
 
       .grid-2 {
-        grid-template-columns: 1fr; /* Quebra as duas colunas em uma só vertical */
+        grid-template-columns: minmax(0, 1fr); /* MATADOR DE ESTOURO: força o cálculo do tamanho mínimo */
         gap: 15px;
         height: auto;
       }
 
-      .card h3 {
-        font-size: 1.1rem;
+      .card {
+        min-width: 0; /* Impede o card de expandir para fora da tela por causa do código */
+        width: 100%;
+        box-sizing: border-box;
       }
 
+      .card h3 {
+        font-size: 1.05rem;
+      }
+
+      /* CORREÇÃO DO BLOCO DE CÓDIGO DO VHDL NO CELULAR */
       pre {
         font-size: 0.75rem;
         height: auto;
-        max-height: 300px;
+        max-height: 250px;
+        white-space: pre; /* Mantém a formatação do código original */
+        overflow-x: auto !important; /* Força o scroll horizontal APENAS dentro da caixa preta */
+        width: 100%;
+        box-sizing: border-box;
+        -webkit-overflow-scrolling: touch;
       }
 
-      /* Força a tabela de máquina e os barramentos a não estourarem a tela */
       .slide-table {
         font-size: 0.65rem;
         display: block;
-        overflow-x: auto; /* Cria rolagem lateral na tabela se necessário */
+        overflow-x: auto;
         white-space: nowrap;
+        width: 100%;
       }
 
-      /* CONTAINER DA WAVEFORM COM ROLAGEM LATERAL NO CELULAR */
       .waveform-wide-box {
-        overflow-x: auto; /* Permite arrastar para o lado para ver os sinais do Quartus */
+        overflow-x: auto;
         justify-content: flex-start;
+        width: 100%;
         -webkit-overflow-scrolling: touch;
       }
 
       .waveform-wide-box img {
-        width: auto; /* Impede a imagem ultrawide de ser esmagada na vertical */
-        height: 180px; /* Mantém uma altura fixa boa para visualização no celular */
+        width: auto;
+        height: 160px;
         max-width: none;
       }
 
@@ -367,7 +387,7 @@
       }
 
       .btn-fullscreen {
-        display: none; /* Esconde o modo tela cheia que não faz sentido no mobile */
+        display: none;
       }
 
       .footer-hint {
