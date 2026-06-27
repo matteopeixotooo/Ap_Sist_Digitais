@@ -289,11 +289,11 @@
     }
 
     /* ============================================================
-       RESPONSIVIDADE MOBILE CORRIGIDA (SEM ESTOURAR A TELA)
+       RESPONSIVIDADE MOBILE CORRIGIDA (SEM SOBREPOSIÇÃO DE BOTÕES)
        ============================================================ */
     @media (max-width: 768px) {
       body {
-        overflow-x: hidden; /* Garante que a página não role para os lados de jeito nenhum */
+        overflow: hidden;
       }
 
       .deck-container {
@@ -306,19 +306,27 @@
       }
 
       .slide {
-        padding: 15px 20px;
-        overflow-y: auto;
+        /* Aumentamos o padding inferior para 100px para criar uma área segura onde os botões não cobrem o texto */
+        padding: 15px 20px 100px 20px !important; 
+        overflow-y: auto !important;
         width: 100%;
         box-sizing: border-box;
+        height: 100% !important;
+      }
+
+      .slide-header {
+        margin-bottom: 15px;
+        padding-bottom: 5px;
       }
 
       .slide-header h2 {
-        font-size: 1.3rem;
+        font-size: 1.25rem;
         line-height: 1.2;
+        max-width: 70%; /* Impede o título de atropelar o indicador do slide no topo */
       }
       
       .slide-subheader {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
       }
 
       .slide-content {
@@ -327,35 +335,44 @@
       }
 
       .grid-2 {
-        grid-template-columns: minmax(0, 1fr); /* MATADOR DE ESTOURO: força o cálculo do tamanho mínimo */
-        gap: 15px;
+        grid-template-columns: minmax(0, 1fr) !important;
+        gap: 12px;
         height: auto;
       }
 
       .card {
-        min-width: 0; /* Impede o card de expandir para fora da tela por causa do código */
+        min-width: 0;
         width: 100%;
         box-sizing: border-box;
+        padding: 15px;
+        margin-bottom: 5px;
       }
 
       .card h3 {
-        font-size: 1.05rem;
+        font-size: 1rem;
       }
 
-      /* CORREÇÃO DO BLOCO DE CÓDIGO DO VHDL NO CELULAR */
+      ul, ol {
+        margin-left: 15px;
+      }
+
+      li {
+        margin-bottom: 6px;
+      }
+
       pre {
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         height: auto;
-        max-height: 250px;
-        white-space: pre; /* Mantém a formatação do código original */
-        overflow-x: auto !important; /* Força o scroll horizontal APENAS dentro da caixa preta */
+        max-height: 220px;
+        white-space: pre;
+        overflow-x: auto !important;
         width: 100%;
         box-sizing: border-box;
         -webkit-overflow-scrolling: touch;
       }
 
       .slide-table {
-        font-size: 0.65rem;
+        font-size: 0.62rem;
         display: block;
         overflow-x: auto;
         white-space: nowrap;
@@ -371,32 +388,58 @@
 
       .waveform-wide-box img {
         width: auto;
-        height: 160px;
+        height: 150px;
         max-width: none;
       }
 
+      /* BARRA DE BOTÕES COM FUNDO SÓLIDO PARA NÃO MISTURAR COM O TEXTO ATRÁS */
       .controls {
-        bottom: 10px;
-        right: 15px;
-        gap: 6px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 60px;
+        background: #ffffff; /* Fundo branco para isolar os botões do texto que rola */
+        border-top: 1px solid #e2e8f0;
+        padding: 0 20px;
+        margin: 0;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 10px;
+        box-sizing: border-box;
+        z-index: 100; /* Garante que fica sempre por cima de tudo */
       }
 
       .btn {
-        padding: 8px 12px;
-        font-size: 0.75rem;
+        padding: 10px 16px;
+        font-size: 0.8rem;
+        height: 40px;
       }
 
       .btn-fullscreen {
         display: none;
       }
 
+      /* AJUSTE DO INDICADOR DO RODAPÉ (SLIDE X / 18) */
       .footer-hint {
-        bottom: 15px;
-        left: 15px;
-        font-size: 0.75rem;
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: #4a5568;
+        z-index: 101; /* Fica acima do fundo branco da barra de botões */
+        margin: 0;
+        padding: 0;
+      }
+      
+      .progress-container {
+        bottom: 60px; /* Joga a barra de progresso para cima da barra de botões */
+        z-index: 102;
       }
     }
-
     @media print {
 
       html,
